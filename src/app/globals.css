@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -126,4 +127,229 @@
   html {
     @apply font-sans;
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Shiki code block styling
+   All visual styling lives here — the wrapper div is just a plain container.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* The <pre> Shiki generates — single source of bg/radius/padding */
+.shiki-wrapper .shiki {
+  padding: 16px !important;
+  border-radius: 8px !important;
+  overflow-x: auto !important;
+  font-size: 0.875rem !important;
+  line-height: 1.6 !important;
+}
+
+/* Token text colors from dual-theme CSS vars */
+.shiki-wrapper .shiki,
+.shiki-wrapper .shiki span {
+  color: var(--shiki-light) !important;
+}
+.dark .shiki-wrapper .shiki,
+.dark .shiki-wrapper .shiki span {
+  color: var(--shiki-dark) !important;
+}
+
+/* Kill any background on individual spans */
+.shiki-wrapper .shiki span {
+  background-color: transparent !important;
+}
+
+/* Inner <code> must be transparent */
+.shiki-wrapper .shiki code {
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+/* Light: Claude — soft bg with subtle border */
+.shiki-wrapper .shiki {
+  background-color: #F8FAFC !important;
+  border: 1px solid #E5E7EB !important;
+}
+
+/* Dark: ChatGPT — One Dark charcoal, no border */
+.dark .shiki-wrapper .shiki {
+  background-color: #282c34 !important;
+  border: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   .md-prose — Scoped markdown viewer styles
+   Light = Claude palette, Dark = ChatGPT palette
+   Only applies inside the rendered markdown article.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Light mode (Claude) ── */
+.md-prose {
+  --md-text: #1F2937;
+  --md-muted: #6B7280;
+  --md-heading-1: #111827;
+  --md-heading-2: #1F2937;
+  --md-heading-3: #374151;
+  --md-heading-4: #4B5563;
+  --md-link: #2563EB;
+  --md-bold: #111827;
+  --md-border: #E5E7EB;
+  --md-inline-code-bg: #F3F4F6;
+  --md-inline-code-text: #B45309;
+  --md-code-block-bg: #F8FAFC;
+  --md-code-block-border: #E5E7EB;
+  --md-code-block-text: #111827;
+  --md-blockquote-border: #E5E7EB;
+  --md-blockquote-text: #6B7280;
+  --md-table-header-bg: #F3F4F6;
+  --md-table-header-text: #111827;
+  --md-table-text: #1F2937;
+  --md-marker: #6B7280;
+  --md-hr: #E5E7EB;
+}
+
+/* ── Dark mode (ChatGPT) ── */
+.dark .md-prose {
+  --md-text: #E5E7EB;
+  --md-muted: #9CA3AF;
+  --md-heading-1: #FFFFFF;
+  --md-heading-2: #F3F4F6;
+  --md-heading-3: #E5E7EB;
+  --md-heading-4: #D1D5DB;
+  --md-link: #60A5FA;
+  --md-bold: #FFFFFF;
+  --md-border: #374151;
+  --md-inline-code-bg: rgba(255, 255, 255, 0.1);
+  --md-inline-code-text: #D1D5DB;
+  --md-code-block-bg: #282c34;
+  --md-code-block-border: transparent;
+  --md-code-block-text: #E5E7EB;
+  --md-blockquote-border: #60A5FA;
+  --md-blockquote-text: #9CA3AF;
+  --md-table-header-bg: rgba(255, 255, 255, 0.05);
+  --md-table-header-text: #FFFFFF;
+  --md-table-text: #E5E7EB;
+  --md-marker: #9CA3AF;
+  --md-hr: #374151;
+}
+
+/* ── Base typography ── */
+.md-prose {
+  color: var(--md-text);
+  font-size: 16px;
+  line-height: 1.7;
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ── Headings ── */
+.md-prose h1 { color: var(--md-heading-1); }
+.md-prose h2 { color: var(--md-heading-2); }
+.md-prose h3 { color: var(--md-heading-3); }
+.md-prose h4,
+.md-prose h5,
+.md-prose h6 { color: var(--md-heading-4); }
+
+/* ── Body text ── */
+.md-prose p,
+.md-prose li,
+.md-prose dd,
+.md-prose dt {
+  color: var(--md-text);
+}
+
+.md-prose strong,
+.md-prose b {
+  color: var(--md-bold);
+}
+
+/* ── Links ── */
+.md-prose a {
+  color: var(--md-link) !important;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.md-prose a:hover {
+  opacity: 0.8;
+}
+
+/* ── Inline code ── */
+.md-prose :not(pre) > code {
+  background: var(--md-inline-code-bg) !important;
+  color: var(--md-inline-code-text) !important;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.875em;
+}
+
+/* Kill Tailwind prose/prose-invert code block styles — we handle them.
+   The react-markdown <pre> is replaced with a fragment, so prose <pre>
+   rules shouldn't fire. This is a safety net. */
+.md-prose > pre {
+  background: none !important;
+  color: inherit !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* ── Code blocks (fallback when Shiki hasn't loaded) ── */
+.md-code-fallback {
+  background: var(--md-code-block-bg) !important;
+  border: 1px solid var(--md-code-block-border) !important;
+  border-radius: 8px !important;
+  padding: 16px !important;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+.md-code-fallback code {
+  color: var(--md-code-block-text) !important;
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+/* ── Blockquotes ── */
+.md-prose blockquote {
+  border-left: 3px solid var(--md-blockquote-border) !important;
+  color: var(--md-blockquote-text);
+  padding-left: 16px;
+  font-style: normal;
+}
+.md-prose blockquote p {
+  color: var(--md-blockquote-text);
+}
+
+/* ── Tables ── */
+.md-prose table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.md-prose th {
+  background: var(--md-table-header-bg);
+  color: var(--md-table-header-text) !important;
+  font-weight: 600;
+}
+.md-prose td,
+.md-prose th {
+  border: 1px solid var(--md-border) !important;
+  padding: 8px 12px;
+}
+.md-prose td {
+  color: var(--md-table-text);
+}
+
+/* ── Lists ── */
+.md-prose li::marker {
+  color: var(--md-marker);
+}
+
+/* ── Horizontal rules ── */
+.md-prose hr {
+  border-color: var(--md-hr);
+}
+
+/* ── Images ── */
+.md-prose img {
+  border-radius: 8px;
 }
