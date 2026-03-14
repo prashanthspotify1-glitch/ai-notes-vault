@@ -13,7 +13,7 @@ export function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Header */}
-      <header className="flex items-center justify-between px-6 py-4 border-b border-border">
+      <header className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-border">
         <div className="flex items-center gap-2">
           <Vault className="h-6 w-6 text-primary" />
           <span className="text-lg font-semibold">{APP_NAME}</span>
@@ -22,13 +22,13 @@ export function LandingPage() {
       </header>
 
       {/* Hero */}
-      <main className="flex-1 flex items-center justify-center p-6">
-        <div className="max-w-lg w-full text-center space-y-8">
+      <main className="flex-1 flex items-center justify-center p-4 sm:p-6">
+        <div className="max-w-lg w-full text-center space-y-6 sm:space-y-8">
           <div className="space-y-4">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-2">
               <Vault className="h-8 w-8 text-primary" />
             </div>
-            <h1 className="text-3xl font-bold tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
               Your personal vault for
               <br />
               AI-generated notes

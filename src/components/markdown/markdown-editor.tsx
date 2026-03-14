@@ -2,9 +2,13 @@
 
 import React, { useState, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { useShikiHighlighter } from "@/hooks/use-shiki";
 import { useUpload } from "@/hooks/use-drive-files";
+import {
+  remarkPlugins,
+  rehypePlugins,
+  buildMarkdownComponents,
+} from "@/components/markdown/markdown-config";
 import { Button } from "@/components/ui/button";
 import {
   Eye,
@@ -18,6 +22,7 @@ import {
   Minimize2,
 } from "lucide-react";
 import { toast } from "sonner";
+import "katex/dist/katex.min.css";
 
 interface MarkdownEditorProps {
   onClose: () => void;
@@ -72,6 +77,8 @@ export function MarkdownEditor({ onClose }: MarkdownEditorProps) {
     toast.success(`Downloaded "${name}"`);
   }, [content, fileName]);
 
+  const mdComponents = buildMarkdownComponents(highlight, shikiReady);
+
   return (
     <div
       className={`flex flex-col bg-card ${
@@ -79,12 +86,12 @@ export function MarkdownEditor({ onClose }: MarkdownEditorProps) {
       }`}
     >
       {/* Toolbar */}
-      <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-muted/50 shrink-0">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-2 sm:px-3 py-1.5 border-b border-border bg-muted/50 shrink-0">
         <div className="flex items-center gap-2">
           {/* Mode toggle */}
           <div className="flex items-center border border-border rounded-md overflow-hidden">
             <button
-              className={`px-2.5 py-1 text-xs font-medium transition-colors cursor-pointer ${
+              className={`px-2 sm:px-2.5 py-1 text-xs font-medium transition-colors cursor-pointer ${
                 mode === "write"
                   ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:text-foreground hover:bg-accent"
@@ -95,7 +102,7 @@ export function MarkdownEditor({ onClose }: MarkdownEditorProps) {
               Write
             </button>
             <button
-              className={`px-2.5 py-1 text-xs font-medium transition-colors cursor-pointer ${
+              className={`px-2 sm:px-2.5 py-1 text-xs font-medium transition-colors cursor-pointer ${
                 mode === "preview"
                   ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:text-foreground hover:bg-accent"
@@ -112,7 +119,7 @@ export function MarkdownEditor({ onClose }: MarkdownEditorProps) {
             type="text"
             value={fileName}
             onChange={(e) => setFileName(e.target.value)}
-            className="h-7 px-2 text-xs bg-background border border-border rounded w-44 focus:outline-none focus:ring-1 focus:ring-ring"
+            className="h-7 px-2 text-xs bg-background border border-border rounded w-28 sm:w-44 focus:outline-none focus:ring-1 focus:ring-ring"
             placeholder="filename.md"
           />
         </div>
@@ -125,7 +132,11 @@ export function MarkdownEditor({ onClose }: MarkdownEditorProps) {
             onClick={handleCopy}
             disabled={!content.trim()}
           >
-            {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+            {copied ? (
+              <Check className="h-3 w-3" />
+            ) : (
+              <Copy className="h-3 w-3" />
+            )}
           </Button>
 
           <Button
@@ -146,10 +157,10 @@ export function MarkdownEditor({ onClose }: MarkdownEditorProps) {
             disabled={!content.trim()}
           >
             <Save className="h-3 w-3" />
-            Save to Drive
+            <span className="hidden sm:inline">Save to Drive</span>
           </Button>
 
-          <div className="w-px h-4 bg-border mx-1" />
+          <div className="w-px h-4 bg-border mx-0.5 sm:mx-1" />
 
           <Button
             variant="ghost"
@@ -184,84 +195,26 @@ export function MarkdownEditor({ onClose }: MarkdownEditorProps) {
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            className="w-full h-full resize-none p-4 text-sm font-mono leading-relaxed bg-background focus:outline-none placeholder:text-muted-foreground/40"
+            className="w-full h-full resize-none p-3 sm:p-4 text-sm font-mono leading-relaxed bg-background focus:outline-none placeholder:text-muted-foreground/40"
             placeholder="Write your markdown here..."
             spellCheck={false}
           />
         ) : (
           <div className="h-full overflow-y-auto">
             {content.trim() ? (
-              <div className="px-6 py-8">
+              <div className="px-3 sm:px-6 py-4 sm:py-8">
                 <article className="md-prose prose prose-neutral dark:prose-invert prose-headings:scroll-mt-4 prose-code:before:content-none prose-code:after:content-none">
                   <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
-                    components={{
-                      pre({ children }) {
-                        return <>{children}</>;
-                      },
-                      code({ className, children, node, ...props }) {
-                        const match = /language-(\w+)/.exec(className || "");
-                        const codeString = String(children).replace(/\n$/, "");
-
-                        const parentIsBlock =
-                          node?.position?.start?.line !== node?.position?.end?.line;
-                        const isBlock = !!match || !!className || parentIsBlock;
-
-                        if (!isBlock) {
-                          return (
-                            <code className="md-inline-code" {...props}>
-                              {children}
-                            </code>
-                          );
-                        }
-
-                        const lang = match?.[1] || "text";
-
-                        if (shikiReady) {
-                          const html = highlight(codeString, lang);
-                          if (html) {
-                            return (
-                              <div
-                                className="shiki-wrapper not-prose !my-4"
-                                dangerouslySetInnerHTML={{ __html: html }}
-                              />
-                            );
-                          }
-                        }
-
-                        return (
-                          <pre className="md-code-fallback not-prose !my-4">
-                            <code>{codeString}</code>
-                          </pre>
-                        );
-                      },
-                      table({ children }) {
-                        return (
-                          <div className="overflow-x-auto my-4">
-                            <table>{children}</table>
-                          </div>
-                        );
-                      },
-                      a({ children, href, ...props }) {
-                        return (
-                          <a
-                            href={href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            {...props}
-                          >
-                            {children}
-                          </a>
-                        );
-                      },
-                    }}
+                    remarkPlugins={remarkPlugins}
+                    rehypePlugins={rehypePlugins}
+                    components={mdComponents}
                   >
                     {content}
                   </ReactMarkdown>
                 </article>
               </div>
             ) : (
-              <div className="flex items-center justify-center h-full text-sm text-muted-foreground/40">
+              <div className="flex items-center justify-center h-full text-sm text-muted-foreground/40 px-4 text-center">
                 Nothing to preview yet. Switch to Write and start typing.
               </div>
             )}
@@ -270,7 +223,7 @@ export function MarkdownEditor({ onClose }: MarkdownEditorProps) {
       </div>
 
       {/* Status bar */}
-      <div className="flex items-center justify-between px-3 py-1 border-t border-border text-xs text-muted-foreground/60 bg-muted/30 shrink-0">
+      <div className="flex items-center justify-between px-2 sm:px-3 py-1 border-t border-border text-xs text-muted-foreground/60 bg-muted/30 shrink-0">
         <span>{content.length} characters</span>
         <span>{content.split("\n").length} lines</span>
       </div>

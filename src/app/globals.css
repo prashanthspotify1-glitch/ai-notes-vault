@@ -352,4 +352,133 @@
 /* ── Images ── */
 .md-prose img {
   border-radius: 8px;
+  max-width: 100%;
+  height: auto;
+}
+
+/* ── Task lists (GFM checkboxes) ── */
+.md-prose ul:has(> li > input[type="checkbox"]) {
+  list-style: none;
+  padding-left: 0;
+}
+.md-prose li > input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--md-border);
+  border-radius: 3px;
+  margin-right: 8px;
+  vertical-align: middle;
+  position: relative;
+  top: -1px;
+  cursor: default;
+}
+.md-prose li > input[type="checkbox"]:checked {
+  background: var(--md-link);
+  border-color: var(--md-link);
+}
+.md-prose li > input[type="checkbox"]:checked::after {
+  content: "✓";
+  display: block;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  line-height: 14px;
+}
+
+/* ── Keyboard keys <kbd> ── */
+.md-prose kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  font-size: 0.8em;
+  font-family: inherit;
+  line-height: 1.4;
+  color: var(--md-text);
+  background: var(--md-inline-code-bg);
+  border: 1px solid var(--md-border);
+  border-radius: 4px;
+  box-shadow: 0 1px 0 var(--md-border);
+}
+
+/* ── Highlight <mark> ── */
+.md-prose mark {
+  background: #FBBF24;
+  color: #111827;
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+.dark .md-prose mark {
+  background: rgba(251, 191, 36, 0.3);
+  color: #FBBF24;
+}
+
+/* ── Underline <u> ── */
+.md-prose u {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ── Subscript / Superscript ── */
+.md-prose sub,
+.md-prose sup {
+  font-size: 0.75em;
+}
+
+/* ── Abbreviations <abbr> ── */
+.md-prose abbr {
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  cursor: help;
+}
+
+/* ── Strikethrough ── */
+.md-prose del {
+  color: var(--md-muted);
+  text-decoration: line-through;
+}
+
+/* ── KaTeX math overrides ── */
+.md-prose .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 8px 0;
+}
+.md-prose .katex {
+  font-size: 1.05em;
+}
+.dark .md-prose .katex .katex-html {
+  color: #E5E7EB;
+}
+
+/* ── Mermaid diagram dark mode ── */
+.dark .mermaid-block svg {
+  filter: invert(0.88) hue-rotate(180deg);
+}
+
+/* ── Mobile tweaks ── */
+@media (max-width: 640px) {
+  .md-prose {
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  .shiki-wrapper .shiki {
+    padding: 12px !important;
+    font-size: 0.8rem !important;
+    border-radius: 6px !important;
+  }
+
+  .md-code-fallback {
+    padding: 12px !important;
+    font-size: 0.8rem;
+    border-radius: 6px !important;
+  }
+
+  .md-prose td,
+  .md-prose th {
+    padding: 6px 8px;
+    font-size: 14px;
+  }
 }
